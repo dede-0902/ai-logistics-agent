@@ -1,16 +1,24 @@
-# React + Vite
+# AI单号通 · 物流查询智能体
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+AI 物流查询小助手，输入快递单号自动查询物流进度并生成客服话术。
 
-Currently, two official plugins are available:
+## 技术栈
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- 前端：React + Vite
+- 后端：Express (Vercel Serverless Function)
+- 物流数据：Coze 工作流
 
-## React Compiler
+## 本地开发
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```bash
+# 启动后端（日志 + Coze 代理）
+cd server && node server.js
 
-## Expanding the Oxlint configuration
+# 启动前端
+npx vite --port 5173
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+## 部署
+
+前端 → 阿里云 OSS 静态网站托管
+后端 → Vercel Serverless Functions
