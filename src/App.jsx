@@ -2,8 +2,12 @@ import { useState, useRef, useEffect, useCallback } from 'react'
 import './App.css'
 
 /* ========== 配置 ========== */
-// API 地址：本地开发用空字符串（走 Vite 代理），生产环境在 .env 里设 VITE_API_BASE
 const API = import.meta.env.VITE_API_BASE || ''
+
+// Coze 直接从浏览器调用（不经过 Vercel 代理，避免 10s 超时）
+const COZE_TOKEN = 'pat_3dzfQcYItGeXEiwEoIvitsBp7rqKSx60VOPiNAwAoxgP8FKIbY0obovp3Ysvxjl4'
+const WORKFLOW_ID = '7663285609365225499'
+const COZE_API = 'https://api.coze.cn/v1/workflows/chat'
 
 const WELCOME_MSG = '你好呀😊！我是你的快递物流查询小助手，输入**快递单号**，我帮你查询物流进度并生成客服话术～'
 
@@ -231,19 +235,27 @@ function App() {
     }
   }, [isTyping, isRevealing, scrollToBottom, reportLog])
 
-  /* 调用 Coze Chat API（等完整响应 + 一次解析 SSE） */
+  /* 调用 Coze API（直接从浏览器，不走 Vercel 代理） */
   const callCozeChatWithProgress = async (input, convName, onProgress) => {
     const controller = new AbortController()
     const timeout = setTimeout(() => controller.abort(), 90000)
 
     try {
-      const res = await fetch(API + '/api/coze', {
+      const res = await fetch(COZE_API, {
         signal: controller.signal,
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Authorization': `Bearer ${COZE_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({
-          input: input.trim(),
-          conversationName: convName,
+          workflow_id: WORKFLOW_ID,
+          additional_messages: [{
+            role: 'user',
+            content_type: 'text',
+            content: input.trim(),
+          }],
+          parameters: { CONVERSATION_NAME: convName },
         }),
       })
 
