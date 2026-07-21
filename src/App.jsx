@@ -4,11 +4,6 @@ import './App.css'
 /* ========== 配置 ========== */
 const API = import.meta.env.VITE_API_BASE || ''
 
-// Coze 直接从浏览器调用（不经过 Vercel 代理，避免 10s 超时）
-const COZE_TOKEN = 'pat_3dzfQcYItGeXEiwEoIvitsBp7rqKSx60VOPiNAwAoxgP8FKIbY0obovp3Ysvxjl4'
-const WORKFLOW_ID = '7663285609365225499'
-const COZE_API = 'https://api.coze.cn/v1/workflows/chat'
-
 const WELCOME_MSG = '你好呀😊！我是你的快递物流查询小助手，输入**快递单号**，我帮你查询物流进度并生成客服话术～'
 
 // 生成随机会话 ID
@@ -241,21 +236,13 @@ function App() {
     const timeout = setTimeout(() => controller.abort(), 90000)
 
     try {
-      const res = await fetch(COZE_API, {
+      const res = await fetch(API + '/api/coze', {
         signal: controller.signal,
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${COZE_TOKEN}`,
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          workflow_id: WORKFLOW_ID,
-          additional_messages: [{
-            role: 'user',
-            content_type: 'text',
-            content: input.trim(),
-          }],
-          parameters: { CONVERSATION_NAME: convName },
+          input: input.trim(),
+          conversationName: convName,
         }),
       })
 
